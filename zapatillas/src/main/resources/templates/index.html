@@ -1,52 +1,143 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+                xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Flex Royale</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-  <link rel="stylesheet" href="stilos.css">
+  <link rel="stylesheet" th:href="@{/stilos.css}">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </head>
 <body>
 
 <header>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-2 fixed-top shadow">
-  <div class="container">
-    <a class="navbar-brand d-flex align-items-center" href="#">
-      <img th:src="@{/img/logo.jpg}" width="35" class="me-2">
-      <span class="fw-bold fs-4">Flex Royale</span>
-    </a>
 
-    <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+    <div class="container">
 
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link active" href="#">Inicio</a></li>
-        <li class="nav-item"><a class="nav-link" href="#productos">Productos</a></li>
-        <li class="nav-item"><a class="nav-link" href="#registro">Registro</a></li>
-      </ul>
-      <div class="navbar-nav ms-auto d-flex align-items-center gap-2">
-        <!-- Botón del carrito con badge de cantidad -->
-        <button class="btn btn-outline-light position-relative" data-bs-toggle="modal" data-bs-target="#cartModal" title="Ver carrito">
-          <i class="bi bi-cart3"></i>
-          <span id="cart-badge" class="position-absolute top-0 start-100 translate-middle badge bg-danger d-none">0</span>
+        <!-- LOGO -->
+        <a class="navbar-brand d-flex align-items-center" href="#">
+
+            <img th:src="@{/img/logo.jpg}"
+                 width="35"
+                 class="me-2">
+
+            <span class="fw-bold fs-4">
+                Flex Royale
+            </span>
+
+        </a>
+
+        <!-- BOTÓN RESPONSIVE -->
+        <button class="navbar-toggler"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav">
+
+            <span class="navbar-toggler-icon"></span>
+
         </button>
-        
-        <!-- Botón de login -->
-        <button id="login-btn" class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#loginModal">Iniciar sesión</button>
-        
-        <!-- Información del usuario cuando está logueado -->
-        <div id="user-info" class="d-none">
-          <span id="user-name" class="text-light me-2"></span>
-          <button id="logout-btn" class="btn btn-outline-light btn-sm">Cerrar sesión</button>
+
+        <!-- MENÚ -->
+        <div class="collapse navbar-collapse"
+             id="navbarNav">
+
+            <!-- LINKS -->
+            <ul class="navbar-nav ms-auto">
+
+                <li class="nav-item">
+
+                    <a class="nav-link active" href="#">
+                        Inicio
+                    </a>
+
+                </li>
+
+                <li class="nav-item">
+
+                    <a class="nav-link" href="#productos">
+                        Productos
+                    </a>
+
+                </li>
+
+                <li class="nav-item">
+
+                    <a class="nav-link" href="#registro">
+                        Registro
+                    </a>
+
+                </li>
+
+            </ul>
+
+            <!-- BOTONES DERECHA -->
+            <div class="navbar-nav ms-auto d-flex align-items-center gap-2">
+
+                <!-- CARRITO -->
+                <button class="btn btn-outline-light position-relative"
+                        data-bs-toggle="modal"
+                        data-bs-target="#cartModal"
+                        title="Ver carrito">
+
+                    <i class="bi bi-cart3"></i>
+
+                    <span id="cart-badge"
+                          class="position-absolute top-0 start-100 translate-middle badge bg-danger d-none">
+
+                        0
+
+                    </span>
+
+                </button>
+
+                <!-- LOGIN -->
+                <div sec:authorize="isAnonymous()">
+
+                    <a th:href="@{/login}"
+                       class="btn btn-outline-light">
+
+                        Iniciar sesión
+
+                    </a>
+
+                </div>
+
+                <!-- USUARIO -->
+                <div sec:authorize="isAuthenticated()"
+                     class="text-light">
+
+                    Hola,
+                    <span id="nombreUsuario"
+      th:data-email="${#authentication.name}">
+</span>
+
+                </div>
+
+                <!-- LOGOUT -->
+                <div sec:authorize="isAuthenticated()">
+
+                    <form th:action="@{/logout}"
+                          method="post">
+
+                        <button type="submit"
+                                class="btn btn-outline-light">
+
+                            Cerrar sesión
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
         </div>
-      </div>
+
     </div>
-  </div>
+
 </nav>
 </header>
 
@@ -64,8 +155,73 @@
     <p class="text-muted">Encuentra el calzado ideal para ti</p>
   </div>
 
-  <!-- Grid de productos (se llenará con JavaScript) -->
-  <div class="row g-4" id="productos-container"></div>
+  <div class="row g-4">
+
+    <div class="col-md-4" th:each="producto : ${productos}">
+      
+      <div class="card h-100 shadow-sm">
+
+        <img th:src="@{/img/{imagen}(imagen=${producto.imagen})}"
+             class="card-img-top"
+             alt="Producto">
+
+        <div class="card-body d-flex flex-column">
+
+          <h5 class="card-title"
+              th:text="${producto.nombre}">
+          </h5>
+
+          <p class="card-text text-muted"
+             th:text="${producto.descripcion}">
+          </p>
+
+          <p class="fw-bold">
+            S/ <span th:text="${producto.precio}"></span>
+          </p>
+
+          <!-- BOTONES -->
+          <div class="mt-auto d-grid gap-2">
+
+            <!-- BOTÓN VER -->
+            <button 
+                class="btn btn-primary btn-sm"
+
+                data-bs-toggle="modal"
+                data-bs-target="#productoModal"
+
+                th:attr="
+                  data-nombre=${producto.nombre},
+                  data-imagen=${producto.imagen},
+                  data-precio=${producto.precio},
+                  data-descripcion=${producto.descripcion}">
+
+                Ver
+
+            </button>
+
+            <!-- BOTÓN CARRITO -->
+            <button 
+                class="btn btn-dark agregar-carrito"
+
+                th:attr="
+                  data-id=${producto.nombre},
+                  data-nombre=${producto.nombre},
+                  data-precio=${producto.precio}">
+
+                <i class="bi bi-cart-plus"></i>
+                Agregar
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
 
 </div>
 </section>
@@ -73,7 +229,9 @@
 <!-- TABLA DE PRODUCTOS -->
 <section class="pb-5">
 <div class="container">
+
   <table class="table table-hover text-center shadow">
+
     <thead class="table-dark">
       <tr>
         <th>#</th>
@@ -83,12 +241,77 @@
       </tr>
     </thead>
 
-    <!-- Tabla (se llenará con JavaScript) -->
-    <tbody id="productos-tabla">
+    <tbody>
+
+      <tr th:each="producto, iter : ${productos}">
+
+        <td th:text="${iter.count}"></td>
+
+        <td th:text="${producto.nombre}"></td>
+
+        <td>
+          S/ <span th:text="${producto.precio}"></span>
+        </td>
+
+        <td>
+          <button 
+    class="btn btn-primary btn-sm btn-ver"
+
+    data-bs-toggle="modal"
+    data-bs-target="#productoModal"
+
+    th:attr="
+      data-nombre=${producto.nombre},
+      data-imagen=${producto.imagen},
+      data-precio=${producto.precio},
+      data-descripcion=${producto.descripcion}">
+
+    Ver
+
+</button>
+        </td>
+
+      </tr>
+
     </tbody>
+
   </table>
+
 </div>
 </section>
+
+<!-- MODAL PRODUCTO -->
+<div class="modal fade" id="productoModal" tabindex="-1">
+
+  <div class="modal-dialog modal-dialog-centered">
+
+    <div class="modal-content">
+
+      <div class="modal-header">
+
+        <h5 class="modal-title" id="modalNombre"></h5>
+
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+
+      </div>
+
+      <div class="modal-body text-center">
+
+        <img id="modalImagen"
+             class="img-fluid rounded mb-3"
+             width="300">
+
+        <h4 id="modalPrecio"></h4>
+
+        <p id="modalDescripcion"></p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
 
 <!-- REGISTRO (simple) -->
 <section id="registro" class="py-5 bg-dark text-white">
@@ -115,30 +338,6 @@
   <p class="text-muted">Calzado para todos</p>
 </footer>
 
-<!-- Modal de Login (Opcional) -->
-<div class="modal fade" id="loginModal" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Iniciar sesión</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <form id="login-form">
-          <div class="mb-3">
-            <label for="email" class="form-label">Correo electrónico</label>
-            <input type="email" class="form-control" id="email" required>
-          </div>
-          <div class="mb-3">
-            <label for="password" class="form-label">Contraseña</label>
-            <input type="password" class="form-control" id="password" required>
-          </div>
-          <button type="submit" class="btn btn-primary">Iniciar sesión</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
 
 <!-- Modal del Carrito de Compras -->
 <div class="modal fade" id="cartModal" tabindex="-1">
@@ -165,266 +364,9 @@
   </div>
 </div>
 
-<script th:src="@{/js/animaciones.js}"></script>
-
-<script>
-// ==================== CARRITO DE COMPRAS ====================
-// Sistema de carrito con localStorage y máximo 5 unidades por producto
-// Código limpio y comentado para facilitar el mantenimiento y comprensión
-
-class ShoppingCart {
-  // Constructor: inicializa el carrito desde localStorage
-  constructor() {
-    this.cart = JSON.parse(localStorage.getItem('cart')) || {};
-    this.renderCart();
-  }
-
-  // Agregar producto al carrito (máximo 5 unidades de cada uno)
-  addProduct(id, nombre, precio) {
-    // Si el producto no existe en el carrito, crear entrada
-    if (!this.cart[id]) {
-      this.cart[id] = { nombre, precio, cantidad: 0 };
-    }
-    
-    // Validar que no supere 5 unidades
-    if (this.cart[id].cantidad < 5) {
-      this.cart[id].cantidad++;
-      this.saveCart();
-      this.renderCart();
-      this.showNotification(`${nombre} agregado al carrito`);
-    } else {
-      this.showNotification(`Máximo 5 unidades de ${nombre}`, 'warning');
-    }
-  }
-
-  // Eliminar producto completamente del carrito
-  removeProduct(id) {
-    delete this.cart[id];
-    this.saveCart();
-    this.renderCart();
-  }
-
-  // Cambiar cantidad de un producto en el carrito
-  updateQuantity(id, quantity) {
-    if (quantity > 0 && quantity <= 5) {
-      this.cart[id].cantidad = quantity;
-      this.saveCart();
-      this.renderCart();
-    }
-  }
-
-  // Guardar carrito en localStorage para persistencia
-  saveCart() {
-    localStorage.setItem('cart', JSON.stringify(this.cart));
-  }
-
-  // Calcular el total del carrito
-  getTotal() {
-    return Object.values(this.cart).reduce((total, item) => {
-      return total + (item.precio * item.cantidad);
-    }, 0);
-  }
-
-  // Contar cantidad total de productos en el carrito
-  getTotalItems() {
-    return Object.values(this.cart).reduce((total, item) => {
-      return total + item.cantidad;
-    }, 0);
-  }
-
-  // Mostrar notificación visual al usuario
-  showNotification(message, type = 'success') {
-    const alertDiv = document.createElement('div');
-    alertDiv.className = `alert alert-${type} position-fixed top-0 start-50 translate-middle-x mt-3`;
-    alertDiv.textContent = message;
-    document.body.appendChild(alertDiv);
-    
-    setTimeout(() => alertDiv.remove(), 3000);
-  }
-
-  // Renderizar el carrito en el modal
-  renderCart() {
-    const container = document.getElementById('cart-items-container');
-    const emptyMessage = document.getElementById('cart-empty');
-    const totalDiv = document.getElementById('cart-total');
-    const badge = document.getElementById('cart-badge');
-    
-    container.innerHTML = '';
-    
-    // Si el carrito está vacío
-    if (Object.keys(this.cart).length === 0) {
-      container.style.display = 'none';
-      emptyMessage.style.display = 'block';
-      totalDiv.textContent = 'Total: $0.00';
-      badge.classList.add('d-none');
-      return;
-    }
-    
-    // Mostrar items del carrito
-    container.style.display = 'block';
-    emptyMessage.style.display = 'none';
-    
-    // Renderizar cada producto en el carrito
-    Object.entries(this.cart).forEach(([id, item]) => {
-      const itemTotal = item.precio * item.cantidad;
-      const itemElement = document.createElement('div');
-      itemElement.className = 'border-bottom pb-3 mb-3';
-      itemElement.innerHTML = `
-        <div class="d-flex justify-content-between align-items-center">
-          <div>
-            <h6 class="mb-0">${item.nombre}</h6>
-            <small class="text-muted">$${item.precio.toFixed(2)} c/u</small>
-          </div>
-          <div class="d-flex align-items-center gap-2">
-            <input type="number" min="1" max="5" value="${item.cantidad}" 
-                   class="form-control form-control-sm" style="width: 70px;"
-                   onchange="cart.updateQuantity('${id}', parseInt(this.value))">
-            <button class="btn btn-sm btn-danger" onclick="cart.removeProduct('${id}')">
-              <i class="bi bi-trash"></i>
-            </button>
-          </div>
-          <div class="fw-bold">$${itemTotal.toFixed(2)}</div>
-        </div>
-      `;
-      container.appendChild(itemElement);
-    });
-    
-    // Actualizar total
-    const total = this.getTotal();
-    totalDiv.textContent = `Total: $${total.toFixed(2)}`;
-    
-    // Actualizar badge del carrito con cantidad de items
-    const itemCount = this.getTotalItems();
-    badge.textContent = itemCount;
-    badge.classList.toggle('d-none', itemCount === 0);
-  }
-}
-
-// ==================== PRODUCTOS ====================
-// Array de productos disponibles
-
-const productos = [
-  { id: 1, nombre: "Vortex Runner X1", descripcion: "Running alto rendimiento", precio: 180, imagen: "sinmarca.jpg" },
-  { id: 2, nombre: "Apex Trainer", descripcion: "Para gimnasio", precio: 150, imagen: "sinmarca2.jpg" },
-  { id: 3, nombre: "NeoFlow", descripcion: "Casual moderno", precio: 220, imagen: "sinmarca3.jpg" }
-];
-
-// Crear instancia global del carrito
-const cart = new ShoppingCart();
-
-// Renderizar productos en grid y tabla
-function renderProductos() {
-  const container = document.getElementById('productos-container');
-  const tabla = document.getElementById('productos-tabla');
-  
-  container.innerHTML = '';
-  tabla.innerHTML = '';
-  
-  productos.forEach((p, index) => {
-    // Crear tarjeta de producto en grid
-    const productCard = document.createElement('div');
-    productCard.className = 'col-md-4';
-    productCard.innerHTML = `
-      <div class="card h-100 shadow-sm">
-        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='200'%3E%3Crect fill='%23ddd'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23999' font-size='20'%3E${p.imagen}%3C/text%3E%3C/svg%3E" class="card-img-top" alt="${p.nombre}">
-        <div class="card-body">
-          <h5 class="card-title">${p.nombre}</h5>
-          <p class="card-text text-muted">${p.descripcion}</p>
-          <h6 class="text-primary">$${p.precio.toFixed(2)}</h6>
-          <button class="btn btn-primary w-100" onclick="cart.addProduct('${p.id}', '${p.nombre}', ${p.precio})">
-            <i class="bi bi-cart-plus"></i> Agregar
-          </button>
-        </div>
-      </div>
-    `;
-    container.appendChild(productCard);
-    
-    // Crear fila en tabla
-    const tableRow = document.createElement('tr');
-    tableRow.innerHTML = `
-      <td>${index + 1}</td>
-      <td>${p.nombre}</td>
-      <td>$${p.precio.toFixed(2)}</td>
-      <td>
-        <button class="btn btn-sm btn-primary" onclick="cart.addProduct('${p.id}', '${p.nombre}', ${p.precio})">
-          <i class="bi bi-plus"></i> Agregar
-        </button>
-      </td>
-    `;
-    tabla.appendChild(tableRow);
-  });
-}
-
-// ==================== AUTENTICACIÓN ====================
-// Sistema de login opcional con localStorage
-
-document.addEventListener('DOMContentLoaded', function() {
-  const userInfo = document.getElementById('user-info');
-  const loginBtn = document.getElementById('login-btn');
-  const userName = document.getElementById('user-name');
-  const logoutBtn = document.getElementById('logout-btn');
-  const loginForm = document.getElementById('login-form');
-
-  // Renderizar productos al cargar
-  renderProductos();
-
-  // Verificar si el usuario está logueado
-  const loggedUser = localStorage.getItem('user');
-  if (loggedUser) {
-    userName.textContent = loggedUser;
-    userInfo.classList.remove('d-none');
-    loginBtn.classList.add('d-none');
-  }
-
-  // Enviar formulario de login
-  loginForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-
-    // Validación de credenciales (en producción usar backend)
-    let users = JSON.parse(localStorage.getItem('users')) || [];
-    const user = users.find(u => u.email === email && u.password === password);
-    
-    if (user) {
-      localStorage.setItem('user', user.name);
-      userName.textContent = user.name;
-      userInfo.classList.remove('d-none');
-      loginBtn.classList.add('d-none');
-
-      // Cerrar modal de login
-      const modal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
-      modal.hide();
-      
-      // Limpiar formulario
-      loginForm.reset();
-    } else {
-      alert('Correo o contraseña incorrectos');
-    }
-  });
-
-  // Cerrar sesión
-  logoutBtn.addEventListener('click', function() {
-    localStorage.removeItem('user');
-    userInfo.classList.add('d-none');
-    loginBtn.classList.remove('d-none');
-  });
-});
-
-// Función de checkout (simulada)
-document.getElementById('checkout-btn').addEventListener('click', function() {
-  const total = cart.getTotal();
-  if (total > 0) {
-    alert(`¡Compra realizada!\nTotal: $${total.toFixed(2)}`);
-    // Limpiar carrito después de la compra
-    cart.cart = {};
-    cart.saveCart();
-    cart.renderCart();
-  } else {
-    alert('El carrito está vacío');
-  }
-});
-</script>
-
+<script th:src="@{/animaciones.js}"></script>
+<script th:src="@{/modal.js}"></script>
+<script th:src="@{/carrito.js}"></script>
+<script th:src="@{/navbar.js}"></script>
 </body>
 </html>

@@ -17,12 +17,12 @@
                     </div>
                     <div class="card-body">
                         <!-- Mensaje de error si el login falla -->
-                        <p th:if="${param.error}" class="alert alert-danger">Usuario o contraseña incorrectos</p>
+                        <p th:if="${param.error}" class="alert alert-danger">Correo o contraseña incorrectos</p>
 
                         <!-- Formulario que envía los datos a /login -->
                         <form th:action="@{/login}" method="post">
                             <div class="mb-3">
-                                <label for="username" class="form-label">Usuario:</label>
+                                <label for="username" class="form-label">Correo:</label>
                                 <input type="text" id="username" name="username" class="form-control" autofocus="autofocus" />
                             </div>
                             

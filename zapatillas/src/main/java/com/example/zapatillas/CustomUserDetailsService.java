@@ -15,24 +15,42 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final Map<String, UserDetails> users = new HashMap<>();
 
     public CustomUserDetailsService() {
+
         // Usuario por defecto
-        addUser("user", "password");
+        addUser("Piero", "user", "password");
+
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username)
+            throws UsernameNotFoundException {
+
         UserDetails user = users.get(username);
+
         if (user == null) {
-            throw new UsernameNotFoundException("Usuario no encontrado: " + username);
+
+            throw new UsernameNotFoundException(
+                "Usuario no encontrado: " + username
+            );
         }
+
         return user;
     }
 
-    public void addUser(String username, String password) {
-        users.put(username, User.withDefaultPasswordEncoder()
-            .username(username)
+    // REGISTRAR USUARIO
+    public void addUser(String name, String email, String password) {
+
+    users.put(email,
+
+        User.withDefaultPasswordEncoder()
+
+            .username(email)
+
             .password(password)
+
             .roles("USER")
-            .build());
-    }
+
+            .build()
+    );
+}
 }

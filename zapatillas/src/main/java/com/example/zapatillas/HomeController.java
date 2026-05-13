@@ -33,12 +33,12 @@ public class HomeController {
 
     @PostMapping("/register")
     public String register(@RequestParam String name, @RequestParam String email, @RequestParam String password) {
-        userDetailsService.addUser(email, password);
+        userDetailsService.addUser(name, email, password);
         return "redirect:/login";
     }
 
     @GetMapping("/login")
     public String login() {
-        return "login";
+        return "/login";
     }
 }
