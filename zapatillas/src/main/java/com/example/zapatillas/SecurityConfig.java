@@ -2,28 +2,62 @@ package com.example.zapatillas;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@EnableWebSecurity
 public class SecurityConfig {
 
-    private final CustomUserDetailsService userDetailsService;
+    // PASSWORD ENCODER
+    @Bean
+    public PasswordEncoder passwordEncoder() {
 
-    public SecurityConfig(CustomUserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
+        return new BCryptPasswordEncoder();
+
     }
 
+    // SECURITY
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http)
+            throws Exception {
+
         http
-            .authorizeHttpRequests((requests) -> requests
-                .requestMatchers("/", "/login", "/register", "/css/**", "/js/**", "/img/**", "/login**", "/resources/**").permitAll()
-                .anyRequest().permitAll()
+            .authorizeHttpRequests(auth -> auth
+
+                .requestMatchers(
+                    "/",
+                    "/login",
+                    "/register",
+                    "/css/**",
+                    "/js/**",
+                    "/img/**"
+                ).permitAll()
+
+                .anyRequest().authenticated()
             )
-            .csrf().disable();
+
+            .formLogin(form -> form
+
+                .loginPage("/login")
+
+                .defaultSuccessUrl("/", true)
+
+                .permitAll()
+            )
+
+            .logout(logout -> logout
+
+                .logoutSuccessUrl("/")
+
+                .permitAll()
+            )
+
+            .csrf(csrf -> csrf.disable());
 
         return http.build();
     }
