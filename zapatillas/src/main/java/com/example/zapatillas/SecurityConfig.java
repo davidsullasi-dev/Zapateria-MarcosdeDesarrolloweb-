@@ -59,6 +59,41 @@ public class SecurityConfig {
 
             .csrf(csrf -> csrf.disable());
 
-        return http.build();
-    }
+    http
+        .authorizeHttpRequests(auth -> auth
+
+            .requestMatchers(
+                "/",
+                "/login",
+                "/register",
+                "/css/**",
+                "/js/**",
+                "/img/**"
+            ).permitAll()
+
+            .anyRequest().authenticated()
+        )
+
+        // LOGIN
+        .formLogin(form -> form
+
+            .loginPage("/login")
+
+            .defaultSuccessUrl("/", true)
+
+            .permitAll()
+        )
+
+        // LOGOUT
+        .logout(logout -> logout
+
+            .logoutSuccessUrl("/")
+
+            .permitAll()
+        )
+
+        .csrf(csrf -> csrf.disable());
+
+    return http.build();
+}
 }
